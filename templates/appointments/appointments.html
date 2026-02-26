@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Appointments - LPU Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Appointments</h1>
+                <p class="dashboard-date">Manage all appointments in one place</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary" onclick="openModal('appointmentModal')">
+                    <i class="fas fa-plus"></i>
+                    New Appointment
+                </button>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="dashboard-card mb-4">
+            <div class="card-body">
+                <div class="d-flex gap-3 align-center" style="flex-wrap: wrap;">
+                    <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+                        <select class="form-select" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+                        <input type="date" class="form-input" id="dateFilter">
+                    </div>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-filter"></i>
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Appointments Table -->
+        <div class="table-container">
+            <table class="table data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if appointments %}
+                        {% for appointment in appointments %}
+                        <tr>
+                            <td>#{{ appointment.id }}</td>
+                            <td>
+                                <div class="d-flex align-center gap-2">
+                                    <div class="user-avatar">{{ appointment.patient.first_name.0 }}{{ appointment.patient.last_name.0 }}</div>
+                                    <span>{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</span>
+                                </div>
+                            </td>
+                            <td>Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}</td>
+                            <td>{{ appointment.appointment_date }}</td>
+                            <td>{{ appointment.appointment_time }}</td>
+                            <td>
+                                <span class="badge {{ appointment.status }}">{{ appointment.status }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-edit" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-delete" title="Cancel">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center" style="padding: 3rem;">
+                                <i class="fas fa-calendar-times" style="font-size: 3rem; color: var(--text-light); margin-bottom: 1rem;"></i>
+                                <p>No appointments found</p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if appointments.has_other_pages %}
+        <div class="d-flex justify-between align-center mt-4">
+            <p class="text-light">Showing {{ appointments.start_index }} to {{ appointments.end_index }} of {{ appointments.paginator.count }} entries</p>
+            <div class="pagination">
+                {% if appointments.has_previous %}
+                <a href="?page={{ appointments.previous_page_number }}" class="btn btn-sm btn-secondary">Previous</a>
+                {% endif %}
+                
+                {% for num in appointments.paginator.page_range %}
+                    {% if appointments.number == num %}
+                    <span class="btn btn-sm btn-primary">{{ num }}</span>
+                    {% elif num > appointments.number|add:'-3' and num < appointments.number|add:'3' %}
+                    <a href="?page={{ num }}" class="btn btn-sm btn-secondary">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if appointments.has_next %}
+                <a href="?page={{ appointments.next_page_number }}" class="btn btn-sm btn-secondary">Next</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- New Appointment Modal -->
+<div class="modal-overlay" id="appointmentModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">Book New Appointment</h3>
+            <button class="modal-close" onclick="closeModal('appointmentModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+<form method="POST" action="{% url 'appointment-create' %}">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Patient</label>
+                    <select name="patient" class="form-select" required>
+                        <option value="">Select Patient</option>
+                        {% for patient in patients %}
+                        <option value="{{ patient.id }}">{{ patient.first_name }} {{ patient.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Doctor</label>
+                    <select name="doctor" class="form-select" required>
+                        <option value="">Select Doctor</option>
+                        {% for doctor in doctors %}
+                        <option value="{{ doctor.id }}">Dr. {{ doctor.first_name }} {{ doctor.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Appointment Date</label>
+                        <input type="date" name="appointment_date" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Appointment Time</label>
+                        <input type="time" name="appointment_time" class="form-input" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Reason for Visit</label>
+                    <textarea name="reason" class="form-input" rows="3" placeholder="Describe the reason for appointment"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea name="notes" class="form-input" rows="2" placeholder="Any additional notes"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('appointmentModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check"></i>
+                    Book Appointment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .text-light {
+        color: var(--text-light);
+    }
+    
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+        document.body.style.overflow = '';
+    }
+</script>
+{% endblock %}

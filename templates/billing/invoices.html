@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Billing & Invoices - LPU Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Billing & Invoices</h1>
+                <p class="dashboard-date">Manage invoices and payments</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary" onclick="openModal('invoiceModal')">
+                    <i class="fas fa-plus"></i>
+                    Create Invoice
+                </button>
+            </div>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats-grid mb-4">
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>₹{{ total_paid|default:0 }}</h3>
+                    <p>Total Paid</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>₹{{ total_pending|default:0 }}</h3>
+                    <p>Pending Payments</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon accent">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ total_invoices|default:0 }}</h3>
+                    <p>Total Invoices</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Invoices Table -->
+        <div class="table-container">
+            <table class="table data-table">
+                <thead>
+                    <tr>
+                        <th>Invoice ID</th>
+                        <th>Patient</th>
+                        <th>Appointment</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if invoices %}
+                        {% for invoice in invoices %}
+                        <tr>
+                            <td>#INV-{{ invoice.id|stringformat:"04d" }}</td>
+                            <td>
+                                <div class="d-flex align-center gap-2">
+                                    <div class="user-avatar">{{ invoice.patient.first_name.0 }}{{ invoice.patient.last_name.0 }}</div>
+                                    <span>{{ invoice.patient.first_name }} {{ invoice.patient.last_name }}</span>
+                                </div>
+                            </td>
+                            <td>#APT-{{ invoice.appointment.id }}</td>
+                            <td><strong>₹{{ invoice.total_amount }}</strong></td>
+                            <td>
+                                <span class="badge {{ invoice.status }}">{{ invoice.status }}</span>
+                            </td>
+                            <td>{{ invoice.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-edit" title="Print">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                    {% if invoice.status == 'pending' %}
+                                    <button class="btn btn-sm btn-primary" title="Pay Now">
+                                        <i class="fas fa-credit-card"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center" style="padding: 3rem;">
+                                <i class="fas fa-file-invoice-dollar" style="font-size: 3rem; color: var(--text-light); margin-bottom: 1rem;"></i>
+                                <p>No invoices found</p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Create Invoice Modal -->
+<div class="modal-overlay" id="invoiceModal">
+    <div class="modal" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Create Invoice</h3>
+            <button class="modal-close" onclick="closeModal('invoiceModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form method="POST" id="invoiceForm">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Patient</label>
+                    <select name="patient" class="form-select" required>
+                        <option value="">Select Patient</option>
+                        {% for patient in patients %}
+                        <option value="{{ patient.id }}">{{ patient.first_name }} {{ patient.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Appointment</label>
+                    <select name="appointment" class="form-select" required>
+                        <option value="">Select Appointment</option>
+                        {% for appointment in appointments %}
+                        <option value="{{ appointment.id }}">{{ appointment.patient.first_name }} - {{ appointment.appointment_date }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-input" rows="2" placeholder="Invoice description"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Consultation Fee</label>
+                        <input type="number" name="consultation_fee" class="form-input" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Medicine Cost</label>
+                        <input type="number" name="medicine_cost" class="form-input" placeholder="0.00">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-labellabel>
+                        <input type="number">Lab Charges</" name="lab_charges" class="form-input" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Other Charges</label>
+                        <input type="number" name="other_charges" class="form-input" placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('invoiceModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Create Invoice
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+        document.body.style.overflow = '';
+    }
+</script>
+{% endblock %}

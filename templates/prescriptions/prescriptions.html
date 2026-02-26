@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Prescriptions - LPU Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="dashboard-container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Prescriptions</h1>
+                <p class="dashboard-date">Manage patient prescriptions</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary" onclick="openModal('prescriptionModal')">
+                    <i class="fas fa-plus"></i>
+                    New Prescription
+                </button>
+            </div>
+        </div>
+        
+        <!-- Prescriptions Table -->
+        <div class="table-container">
+            <table class="table data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Appointment</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if prescriptions %}
+                        {% for prescription in prescriptions %}
+                        <tr>
+                            <td>#{{ prescription.id }}</td>
+                            <td>
+                                <div class="d-flex align-center gap-2">
+                                    <div class="user-avatar">{{ prescription.appointment.patient.first_name.0 }}{{ prescription.appointment.patient.last_name.0 }}</div>
+                                    <span>{{ prescription.appointment.patient.first_name }} {{ prescription.appointment.patient.last_name }}</span>
+                                </div>
+                            </td>
+                            <td>Dr. {{ prescription.appointment.doctor.first_name }} {{ prescription.appointment.doctor.last_name }}</td>
+                            <td>#{{ prescription.appointment.id }}</td>
+                            <td>{{ prescription.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-edit" title="Print">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center" style="padding: 3rem;">
+                                <i class="fas fa-prescription" style="font-size: 3rem; color: var(--text-light); margin-bottom: 1rem;"></i>
+                                <p>No prescriptions found</p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- New Prescription Modal -->
+<div class="modal-overlay" id="prescriptionModal">
+    <div class="modal" style="max-width: 700px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Create Prescription</h3>
+            <button class="modal-close" onclick="closeModal('prescriptionModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form method="POST" id="prescriptionForm">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Appointment</label>
+                    <select name="appointment" class="form-select" required>
+                        <option value="">Select Appointment</option>
+                        {% for appointment in appointments %}
+                        <option value="{{ appointment.id }}">{{ appointment.patient.first_name }} - {{ appointment.appointment_date }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Symptoms</label>
+                    <textarea name="symptoms" class="form-input" rows="2" placeholder="Enter patient symptoms"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Diagnosis</label>
+                    <textarea name="diagnosis" class="form-input" rows="2" placeholder="Enter diagnosis"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Medications</label>
+                    <textarea name="medications" class="form-input" rows="4" placeholder="Enter medications with dosage instructions"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Instructions</label>
+                    <textarea name="instructions" class="form-input" rows="2" placeholder="Additional instructions for patient"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Follow-up Date</label>
+                    <input type="date" name="follow_up_date" class="form-input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('prescriptionModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Save Prescription
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+        document.body.style.overflow = '';
+    }
+</script>
+{% endblock %}

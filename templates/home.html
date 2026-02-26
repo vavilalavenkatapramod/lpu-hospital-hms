@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}LPU Hospital Management System - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    
+    <div class="hero-content">
+        <div class="hero-badge" data-aos="fadeInDown">
+            <i class="fas fa-star"></i>
+            <span>AI-Powered Healthcare Solution</span>
+        </div>
+        
+        <h1 class="hero-title" data-aos="fadeInUp">
+            Next-Gen <span>Hospital Management</span> System
+        </h1>
+        
+        <p class="hero-subtitle" data-aos="fadeInUp" data-aos-delay="200">
+            Streamline your healthcare operations with our comprehensive HMS solution. 
+            From appointments to billing, we've got everything covered with cutting-edge technology.
+        </p>
+        
+        <div class="hero-buttons" data-aos="fadeInUp" data-aos-delay="400">
+            <a href="{% url 'register' %}" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i>
+                Get Started Free
+            </a>
+            <a href="#features" class="btn btn-secondary">
+                <i class="fas fa-play"></i>
+                Learn More
+            </a>
+        </div>
+        
+        <div class="hero-stats" data-aos="fadeInUp" data-aos-delay="600">
+            <div class="stat-item">
+                <div class="stat-number" data-count="5000">5000</div>
+                <div class="stat-label">Patients Served</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-count="150">150</div>
+                <div class="stat-label">Expert Doctors</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-count="99">99</div>
+                <div class="stat-label">% Satisfaction</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features" id="features">
+    <div class="section-header" data-aos="fadeInUp">
+        <span class="section-tag">Features</span>
+        <h2 class="section-title">Everything You Need</h2>
+        <p class="section-subtitle">Our comprehensive system provides all the tools required to manage your healthcare facility efficiently.</p>
+    </div>
+    
+    <div class="features-grid">
+        <div class="feature-card" data-aos="fadeInUp" data-aos-delay="100">
+            <div class="feature-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h3 class="feature-title">Role-Based Access</h3>
+            <p class="feature-text">Secure authentication with JWT tokens and granular role-based permissions for Admin, Doctors, and Patients.</p>
+        </div>
+        
+        <div class="feature-card" data-aos="fadeInUp" data-aos-delay="200">
+            <div class="feature-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <h3 class="feature-title">Smart Appointments</h3>
+            <p class="feature-text">Easy appointment booking with calendar integration, automatic reminders, and conflict detection.</p>
+        </div>
+        
+        <div class="feature-card" data-aos="fadeInUp" data-aos-delay="300">
+            <div class="feature-icon">
+                <i class="fas fa-prescription"></i>
+            </div>
+            <h3 class="feature-title">Digital Prescriptions</h3>
+            <p class="feature-text">Create, manage, and track digital prescriptions with complete medical history integration.</p>
+        </div>
+        
+        <div class="feature-card" data-aos="fadeInUp" data-aos-delay="400">
+            <div class="feature-icon">
+                <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <h3 class="feature-title">Billing & Invoices</h3>
+            <p class="feature-text">Automated billing, invoice generation, and payment tracking with multiple payment methods.</p>
+        </div>
+        
+        <div class="feature-card" data-aos="fadeInUp" data-aos-delay="500">
+            <div class="feature-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 class="feature-title">Analytics Dashboard</h3>
+            <p class="feature-text">Real-time insights with Redis-cached dashboards, revenue charts, and performance metrics.</p>
+        </div>
+        
+        <div class="feature-card" data-aos="fadeInUp" data-aos-delay="600">
+            <div class="feature-icon">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <h3 class="feature-title">Production Ready</h3>
+            <p class="feature-text">Deploy with Docker, Gunicorn, PostgreSQL, and Redis. Ready for Render deployment.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="services">
+    <div class="section-header" data-aos="fadeInUp">
+        <span class="section-tag">Services</span>
+        <h2 class="section-title">Our Healthcare Services</h2>
+        <p class="section-subtitle">Comprehensive medical care across multiple specialties</p>
+    </div>
+    
+    <div class="services-grid">
+        <div class="service-card" data-aos="fadeInUp" data-aos-delay="100">
+            <div class="service-image">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <div class="service-content">
+                <h3 class="service-title">Cardiology</h3>
+                <p class="service-text">Expert cardiac care with state-of-the-art diagnostic and treatment facilities.</p>
+                <a href="#" class="service-link">
+                    Learn More <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="service-card" data-aos="fadeInUp" data-aos-delay="200">
+            <div class="service-image">
+                <i class="fas fa-baby"></i>
+            </div>
+            <div class="service-content">
+                <h3 class="service-title">Pediatrics</h3>
+                <p class="service-text">Compassionate healthcare for children from newborns to adolescents.</p>
+                <a href="#" class="service-link">
+                    Learn More <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="service-card" data-aos="fadeInUp" data-aos-delay="300">
+            <div class="service-image">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div class="service-content">
+                <h3 class="service-title">Neurology</h3>
+                <p class="service-text">Advanced neurological treatments and brain health services.</p>
+                <a href="#" class="service-link">
+                    Learn More <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="about">
+    <div class="about-container">
+        <div class="about-image" data-aos="fadeInRight">
+            <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); height: 400px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 8rem;">
+                <i class="fas fa-hospital-user"></i>
+            </div>
+            <div class="about-image-badge">
+                <span>10+</span>
+                <small>Years Experience</small>
+            </div>
+        </div>
+        
+        <div class="about-content" data-aos="fadeInLeft">
+            <span class="section-tag">About Us</span>
+            <h2 class="about-title">Transforming Healthcare with Technology</h2>
+            <p class="about-text">
+                Our Hospital Management System is designed to revolutionize how healthcare facilities operate. 
+                With AI-powered features, seamless integrations, and a user-friendly interface, we make 
+                healthcare management simpler than ever.
+            </p>
+            
+            <div class="about-features">
+                <div class="about-feature">
+                    <i class="fas fa-check-circle"></i>
+                    <span>24/7 Support</span>
+                </div>
+                <div class="about-feature">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Data Security</span>
+                </div>
+                <div class="about-feature">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Cloud Based</span>
+                </div>
+                <div class="about-feature">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Regular Updates</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+    <div class="section-header" data-aos="fadeInUp">
+        <span class="section-tag">Testimonials</span>
+        <h2 class="section-title">What Our Users Say</h2>
+        <p class="section-subtitle">Trusted by healthcare professionals worldwide</p>
+    </div>
+    
+    <div class="testimonials-grid">
+        <div class="testimonial-card" data-aos="fadeInUp" data-aos-delay="100">
+            <p class="testimonial-text">"This HMS system has transformed our hospital operations. The appointment booking and billing modules are exceptional!"</p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">DR</div>
+                <div class="testimonial-info">
+                    <h4>Dr. Sarah Johnson</h4>
+                    <span>Cardiologist</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="testimonial-card" data-aos="fadeInUp" data-aos-delay="200">
+            <p class="testimonial-text">"The best hospital management system I've used. Clean interface, powerful features, and excellent support team."</p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">MK</div>
+                <div class="testimonial-info">
+                    <h4>Dr. Michael Kim</h4>
+                    <span>Pediatrician</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="testimonial-card" data-aos="fadeInUp" data-aos-delay="300">
+            <p class="testimonial-text">"Our patient satisfaction has increased by 40% since implementing this system. Highly recommended!"</p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">AP</div>
+                <div class="testimonial-info">
+                    <h4>Admin Panel</h4>
+                    <span>Hospital Director</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+    <div class="cta-container" data-aos="fadeInUp">
+        <h2 class="cta-title">Ready to Transform Your Healthcare Facility?</h2>
+        <p class="cta-text">Join thousands of healthcare providers who have streamlined their operations with our HMS solution.</p>
+        <div class="cta-buttons">
+            <a href="{% url 'register' %}" class="btn btn-primary">
+                <i class="fas fa-rocket"></i>
+                Start Free Trial
+            </a>
+            <a href="#" class="btn btn-secondary">
+                <i class="fas fa-phone"></i>
+                Contact Sales
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

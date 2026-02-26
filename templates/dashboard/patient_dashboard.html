@@ -1,0 +1,445 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Patient Dashboard - LPU Hospital Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-page {
+        padding-top: 100px;
+        min-height: 100vh;
+        background: var(--light-bg);
+    }
+    
+    .welcome-banner {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .welcome-content h2 {
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .welcome-content p {
+        opacity: 0.9;
+    }
+    
+    .health-tip {
+        background: rgba(255,255,255,0.2);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="dashboard-container">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner" data-aos="fadeInUp">
+            <div class="welcome-content">
+                <h2>Welcome back, {{ user.first_name }}!</h2>
+                <p>Here's your health overview and upcoming appointments.</p>
+                <div class="health-tip">
+                    <i class="fas fa-lightbulb"></i> 
+                    <span>Remember to attend your scheduled appointments and maintain your medical records up to date.</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions-grid mb-4">
+            <a href="{% url 'appointments' %}" class="quick-action-btn">
+                <i class="fas fa-calendar-plus"></i>
+                <span>Book Appointment</span>
+            </a>
+            <a href="{% url 'prescriptions' %}" class="quick-action-btn">
+                <i class="fas fa-prescription"></i>
+                <span>My Prescriptions</span>
+            </a>
+            <a href="{% url 'invoices' %}" class="quick-action-btn">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>My Invoices</span>
+            </a>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card" data-aos="fadeInUp" data-aos-delay="100">
+                <div class="stat-icon primary">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number">{{ my_appointments_count|default:0 }}</h3>
+                    <p>Total Appointments</p>
+                </div>
+            </div>
+            
+            <div class="stat-card" data-aos="fadeInUp" data-aos-delay="200">
+                <div class="stat-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number">{{ completed_appointments|default:0 }}</h3>
+                    <p>Completed</p>
+                </div>
+            </div>
+            
+            <div class="stat-card" data-aos="fadeInUp" data-aos-delay="300">
+                <div class="stat-icon warning">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number">{{ upcoming_appointments|default:0 }}</h3>
+                    <p>Upcoming</p>
+                </div>
+            </div>
+            
+            <div class="stat-card" data-aos="fadeInUp" data-aos-delay="400">
+                <div class="stat-icon accent">
+                    <i class="fas fa-file-medical-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number">{{ my_prescriptions_count|default:0 }}</h3>
+                    <p>Prescriptions</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Upcoming Appointments -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card" data-aos="fadeInUp" data-aos-delay="500" style="grid-column: span 2;">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        Upcoming Appointments
+                    </h3>
+                    <a href="{% url 'appointments' %}" class="btn btn-sm btn-primary">Book New</a>
+                </div>
+                <div class="card-body">
+                    <div class="schedule-list">
+                        {% if my_appointments %}
+                            {% for appointment in my_appointments %}
+                            <div class="schedule-item">
+                                <div class="schedule-date">
+                                    <span class="day">{{ appointment.appointment_date|date:"d" }}</span>
+                                    <span class="month">{{ appointment.appointment_date|date:"M" }}</span>
+                                </div>
+                                <div class="schedule-info">
+                                    <h4>Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}</h4>
+                                    <p>{{ appointment.doctor.doctor_profile.specialization|default:"General Medicine" }}</p>
+                                    <p class="text-muted"><i class="fas fa-clock"></i> {{ appointment.appointment_time }}</p>
+                                </div>
+                                <span class="badge {{ appointment.status }}">{{ appointment.status }}</span>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-times"></i>
+                                <p>No upcoming appointments</p>
+                                <a href="{% url 'appointments' %}" class="btn btn-primary mt-3">Book Appointment</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- My Prescriptions & Billing -->
+        <div class="dashboard-grid mt-4">
+            <div class="dashboard-card" data-aos="fadeInUp" data-aos-delay="600">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-prescription"></i>
+                        Recent Prescriptions
+                    </h3>
+                    <a href="{% url 'prescriptions' %}" class="btn btn-sm btn-secondary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if my_prescriptions %}
+                        <div class="prescription-list">
+                            {% for prescription in my_prescriptions|slice:":3" %}
+                            <div class="prescription-item">
+                                <div class="prescription-date">{{ prescription.created_at|date:"M d, Y" }}</div>
+                                <div class="prescription-info">
+                                    <h5>Dr. {{ prescription.appointment.doctor.first_name }} {{ prescription.appointment.doctor.last_name }}</h5>
+                                    <p>{{ prescription.diagnosis|default:"Medical consultation" }}</p>
+                                </div>
+                                <button class="btn btn-sm btn-view" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state-small">
+                            <i class="fas fa-prescription"></i>
+                            <p>No prescriptions yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="dashboard-card" data-aos="fadeInUp" data-aos-delay="700">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        Billing & Payments
+                    </h3>
+                    <a href="{% url 'invoices' %}" class="btn btn-sm btn-secondary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if my_invoices %}
+                        <div class="invoice-list">
+                            {% for invoice in my_invoices|slice:":3" %}
+                            <div class="invoice-item">
+                                <div class="invoice-info">
+                                    <h5>#INV-{{ invoice.id|stringformat:"04d" }}</h5>
+                                    <p>{{ invoice.created_at|date:"M d, Y" }}</p>
+                                </div>
+                                <div class="invoice-amount">
+                                    <strong>₹{{ invoice.total_amount }}</strong>
+                                    <span class="badge {{ invoice.status }}">{{ invoice.status }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state-small">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <p>No invoices yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Card -->
+        <div class="dashboard-grid mt-4">
+            <div class="dashboard-card" data-aos="fadeInUp" data-aos-delay="800">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-user"></i>
+                        My Profile
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="profile-info">
+                        <div class="profile-avatar">
+                            {{ user.first_name.0 }}{{ user.last_name.0 }}
+                        </div>
+                        <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+                        <p class="text-muted">{{ user.email }}</p>
+                        {% if user.patient_profile %}
+                        <div class="profile-details mt-3">
+                            <p><i class="fas fa-phone"></i> {{ user.phone|default:"Not provided" }}</p>
+                            <p><i class="fas fa-tint"></i> Blood Type: {{ user.patient_profile.blood_type|default:"Unknown" }}</p>
+                            <p><i class="fas fa-calendar"></i> DOB: {{ user.date_of_birth|default:"Not provided" }}</p>
+                        </div>
+                        {% endif %}
+                        <a href="#" class="btn btn-primary mt-3">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .quick-action-btn {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-color);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .quick-action-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .schedule-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .schedule-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--light-bg);
+        border-radius: 8px;
+    }
+    
+    .schedule-date {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 50px;
+        padding: 0.5rem;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 8px;
+    }
+    
+    .schedule-date .day {
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+    
+    .schedule-date .month {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+    
+    .schedule-info {
+        flex: 1;
+    }
+    
+    .schedule-info h4 {
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .schedule-info p {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin: 0;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .empty-state-small {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+    }
+    
+    .empty-state-small i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.5;
+    }
+    
+    .prescription-list, .invoice-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .prescription-item, .invoice-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+        background: var(--light-bg);
+        border-radius: 8px;
+    }
+    
+    .prescription-date {
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    .prescription-info h5, .invoice-info h5 {
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .prescription-info p, .invoice-info p {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin: 0;
+    }
+    
+    .invoice-amount {
+        text-align: right;
+    }
+    
+    .invoice-amount strong {
+        display: block;
+        font-size: 1rem;
+    }
+    
+    .profile-info {
+        text-align: center;
+    }
+    
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 auto 1rem;
+    }
+    
+    .profile-details {
+        text-align: left;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .profile-details p {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .profile-details i {
+        color: var(--primary-color);
+        width: 20px;
+    }
+    
+    .text-muted {
+        color: var(--text-light);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize patient dashboard
+    });
+</script>
+{% endblock %}

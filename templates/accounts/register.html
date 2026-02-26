@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - LPU Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <a href="{% url 'home' %}" class="auth-logo">
+                    <i class="fas fa-hospital-user"></i>
+                    <span>LPU HMS</span>
+                </a>
+                <h1 class="auth-title">Create Account</h1>
+                <p class="auth-subtitle">Join our healthcare management system</p>
+            </div>
+            
+            <form method="POST" action="{% url 'register' %}" class="register-form">
+                {% csrf_token %}
+                
+{% if errors %}
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% for error in errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="id_first_name">First Name</label>
+                        <input type="text" name="first_name" id="id_first_name" class="form-input" 
+                               placeholder="John" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="id_last_name">Last Name</label>
+                        <input type="text" name="last_name" id="id_last_name" class="form-input" 
+                               placeholder="Doe" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="id_email">Email Address</label>
+                    <input type="email" name="email" id="id_email" class="form-input" 
+                           placeholder="john.doe@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="id_username">Username</label>
+                    <input type="text" name="username" id="id_username" class="form-input" 
+                           placeholder="johndoe123" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="id_role">Register As</label>
+                    <select name="role" id="id_role" class="form-select" required>
+                        <option value="">Select your role</option>
+                        <option value="patient">Patient</option>
+                        <option value="doctor">Doctor</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="id_password1">Password</label>
+                    <input type="password" name="password1" id="id_password1" class="form-input" 
+                           placeholder="Create a strong password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="id_password2">Confirm Password</label>
+                    <input type="password" name="password2" id="id_password2" class="form-input" 
+                           placeholder="Confirm your password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="terms" required>
+                        <span>I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-auth">
+                    <i class="fas fa-user-plus"></i>
+                    Create Account
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Already have an account? <a href="{% url 'login' %}">Sign in here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .alert-danger {
+        background: rgba(231, 76, 60, 0.1);
+        color: var(--accent-color);
+        border: 1px solid rgba(231, 76, 60, 0.3);
+    }
+    
+    .checkbox-label {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        cursor: pointer;
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .checkbox-label input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--primary-color);
+    }
+    
+    .checkbox-label a {
+        color: var(--primary-color);
+    }
+    
+    .checkbox-label a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
